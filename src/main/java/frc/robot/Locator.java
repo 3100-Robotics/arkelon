@@ -1,11 +1,12 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import choreo.util.ChoreoAllianceFlipUtil;
+import choreo.util.ChoreoAllianceFlipUtil.Flipper;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
@@ -24,6 +25,7 @@ public class Locator {
     public Rotation2d hubPointFlipAngle = Rotation2d.kZero;
 
     public Pose2d hubPose = Constants.hubPoseBlue;
+    public Pose2d towerPose = Constants.towerPoseBlue;
 
     private final Field2d field = new Field2d();
 
@@ -88,6 +90,12 @@ public class Locator {
                 allianceColor -> hubPose = allianceColor == Alliance.Red 
                     ? Constants.hubPoseRed : 
                     Constants.hubPoseBlue
+            );
+
+            alliance.ifPresent(
+                allianceColor -> towerPose = allianceColor == Alliance.Red 
+                    ? Constants.towerPoseRed : 
+                    Constants.towerPoseBlue
             );
 
             alliance.ifPresent(

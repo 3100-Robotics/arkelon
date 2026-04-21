@@ -11,6 +11,8 @@ import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import choreo.util.ChoreoAllianceFlipUtil;
+import choreo.util.ChoreoAllianceFlipUtil.Flipper;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -26,16 +28,16 @@ public class Constants {
     public static final Distance fieldWidth = Inches.of(317.69);
 
     public static final Pose2d hubPoseBlue = new Pose2d(4.628518104553223, 4.035704612731934, new Rotation2d());
-    public static final Pose2d hubPoseRed = new Pose2d(4.628518104553223, 4.035704612731934, new Rotation2d())
-        .rotateAround(new Translation2d(
-            fieldLength.div(2),
-            fieldWidth.div(2)
-        ), Rotation2d.fromDegrees(180));
+    public static final Pose2d hubPoseRed = ChoreoAllianceFlipUtil.getMirrorX().flip(hubPoseBlue);
+
+    public static final Pose2d towerPoseBlue = new Pose2d(0.7231502532958984, 4.741844654083252, new Rotation2d());
+    public static final Pose2d towerPoseRed = ChoreoAllianceFlipUtil.getMirrorX().flip(towerPoseBlue);
+
 
     public interface MotorConfigs {
         public SparkBaseConfig noBadFilteringNEO = new SparkMaxConfig()
             // TODO: Tune these value for real, currently i just pulled them from the CD thread (thanks Phil)
-            // https://www.chiefdelphi.com/t/psa-rev-spark-default-velocity-filtering-is-still-really-bad-for-flywheels/514567/4
+            // TODO: https://www.chiefdelphi.com/t/psa-rev-spark-default-velocity-filtering-is-still-really-bad-for-flywheels/514567/4
             .apply(new EncoderConfig()
                 .quadratureAverageDepth(2)
                 .quadratureMeasurementPeriod(10)

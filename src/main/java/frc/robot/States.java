@@ -29,7 +29,11 @@ public class States {
         }
         
         public enum HoodState {
-            Frozen, Varying, NeutralToAlly(31), OpposeToAlly(40);
+            Frozen,
+            Varying,
+            NeutralToAlly(31),
+            OpposeToAlly(40),
+            Reset(Constants.ShooterConstants.minHoodAngle);
 
             public Optional<Angle> angle;
 
@@ -79,7 +83,9 @@ public class States {
 
     public static class Indexer {
         public enum TripleRollerStates {
-            On(2377, 4414, 4414), Off(0, 0, 0);
+            On(2377, 4414, 4414),
+            Reverse(-2377, -4414, -4414),
+            Off(0, 0, 0);
             
             public AngularVelocity floorSpeed;
             public AngularVelocity ceilingSpeed;

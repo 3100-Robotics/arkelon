@@ -13,8 +13,6 @@ import static frc.robot.Constants.IntakeContants;
 
 import java.util.Optional;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -105,13 +103,6 @@ public class Intake extends SubsystemBase {
     private Optional<PivotState> lastPivotState = Optional.of(PivotState.Medium);
 
     public Intake() {
-
-        // rawCANCoder.getConfigurator().apply(
-        //     new CANcoderConfiguration().withMagnetSensor(
-        //         new MagnetSensorConfigs()
-        //             .withAbsoluteSensorDiscontinuityPoint(IntakeContants.pivotEncoderDiscontinuityPoint)
-        //     )
-        // );
         setDefaultCommand(applyStateCommand());
     }
 

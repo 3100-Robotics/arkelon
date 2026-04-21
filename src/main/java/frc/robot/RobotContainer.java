@@ -4,22 +4,12 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -126,13 +116,13 @@ public class RobotContainer {
             Commands.parallel(
                 intake.setRollerState(RollerState.Off),
                 indexer.setState(TripleRollerStates.Off),
-                shooter.setFlywheelState(FlywheelStates.Frozen)
+                shooter.setFlywheelState(FlywheelStates.Frozen),
+                shooter.setHoodState(HoodState.Reset)
             )
         );
         
         // Reset odometry: povDown
-        // TODO: Make it reset to tower pose
-        brendanCtl.povDown().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+        brendanCtl.povDown().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Locator.getInstance().towerPose)));
         
         // Toggle vision: povRight
         brendanCtl.povRight().onTrue(Commands.runOnce(() -> {
@@ -144,7 +134,15 @@ public class RobotContainer {
         }));
 
         // Keep flywheel spun up while holding: rightBumper
+        brendanCtl.rightBumper()
+            .onTrue(shooter.setFlywheelState(FlywheelStates.Varying))
+            .onFalse(shooter.setFlywheelState(FlywheelStates.Frozen))
+        ;
         // Reverse intake povLeft
+        brendanCtl.povLeft()
+            .onTrue(intake.setRollerState(RollerState.Reverse))
+            .onFalse(intake.setRollerState(RollerState.Off))
+        ;
     }
 
     public Command getAutonomousCommand() {
