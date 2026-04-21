@@ -133,8 +133,10 @@ public class Shooter extends SubsystemBase {
             hoodState.ifPresent(state -> {
                 if (state==HoodState.Frozen) {
                     hoodMotor.setDutyCycle(0);
-                } else {
+                } else if (state==HoodState.Varying) {
                     hoodMotor.setPosition(hoodAngleSupplier.get());
+                } else if (state.angle.isPresent()) {
+                    hoodMotor.setPosition(state.angle.get());
                 }
             });
 
@@ -142,9 +144,12 @@ public class Shooter extends SubsystemBase {
                 if (state==FlywheelStates.Frozen) {
                     leftMotor.setDutyCycle(0);
                     rightMotor.setDutyCycle(0);
-                } else {
+                } else if (state==FlywheelStates.Varying) {
                     leftMotor.setVelocity(flywheelSpeedSupplier.get());
                     rightMotor.setVelocity(flywheelSpeedSupplier.get());
+                } else if (state.speed.isPresent()) {
+                    leftMotor.setVelocity(state.speed.get());
+                    rightMotor.setVelocity(state.speed.get());
                 }
             });
 

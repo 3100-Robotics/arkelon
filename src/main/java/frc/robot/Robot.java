@@ -52,7 +52,9 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+        Logging.getInstance().composeGameMessage();
+    }
 
     @Override
     public void teleopInit() {

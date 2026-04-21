@@ -3,17 +3,47 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import java.util.Optional;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class States {
     public static class Shooter {
         public enum FlywheelStates {
-            Frozen, Varying;
+            Frozen, Varying, NeutralToAlly(3100), OpposeToAlly(3200);
+
+            public Optional<AngularVelocity> speed;
+
+            private FlywheelStates(AngularVelocity speed) {
+                this.speed = Optional.of(speed);
+            }
+
+            private FlywheelStates(float speed) {
+                this.speed = Optional.of(RPM.of(speed));
+            }
+
+            private FlywheelStates() {
+                speed = Optional.empty();
+            }
         }
         
         public enum HoodState {
-            Frozen, Varying;
+            Frozen, Varying, NeutralToAlly(31), OpposeToAlly(40);
+
+            public Optional<Angle> angle;
+
+            private HoodState(Angle angle) {
+                this.angle = Optional.of(angle);
+            }
+
+            private HoodState(float angle) {
+                this.angle = Optional.of(Degrees.of(angle));
+            }
+
+            private HoodState() {
+                this.angle = Optional.empty();
+            }
         }
     }
 

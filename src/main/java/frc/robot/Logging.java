@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 public class Logging {
     private static Logging instance;
     public static Logging getInstance() {
@@ -49,7 +50,26 @@ public class Logging {
     private final String[] autonWinnerColorRed = new String[] {"#FF0000", "#000000"};
     private final String[] autonWinnerColorBlue = new String[] {"#000000", "#0000FF"};
 
-
+    public void composeGameMessage() {
+        String gameData = DriverStation.getGameSpecificMessage();
+        if(gameData.length() > 0)
+        {
+            switch (gameData.charAt(0))
+            {
+                case 'B':
+                    autonWinner.set(autonWinnerColorBlue);
+                break;
+                case 'R':
+                    autonWinner.set(autonWinnerColorRed);
+                break;
+                default:
+                    autonWinner.set(autonWinnerColorError);
+                break;
+            }
+        } else {
+            autonWinner.set(autonWinnerColorNone);
+        }
+    }
 
     public void logCTREChassis(SwerveDriveState state) {
         chassisPoseLog.append(new double[] {
