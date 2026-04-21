@@ -166,6 +166,32 @@ public class Auton {
                 intake.setPivotState(PivotState.FullDeploy),
                 part1.cmd(),
                 // Collect
+                Commands.waitSeconds(5),
+                drivetrain.goToPoseCommand(part2.getInitialPose()::get),
+                part2.cmd(),
+                Commands.parallel(
+                    drivetrain.pointAtPose(() -> Locator.getInstance().hubPose),
+                    rcontainer.shootDialed()
+                )
+            )
+        );
+
+        return routine;
+    }
+
+    public AutoRoutine outpostNeutralZone() {
+        var routine = autoFactory.newRoutine("outpostNeutralZone");
+
+        var part1 = routine.trajectory("outpost_part1");
+        var part2 = routine.trajectory("outpost_part2");
+
+        routine.active().onTrue(
+            Commands.sequence(
+                part1.resetOdometry(),
+                intake.setPivotState(PivotState.FullDeploy),
+                part1.cmd(),
+                // Collect
+                Commands.waitSeconds(5),
                 drivetrain.goToPoseCommand(part2.getInitialPose()::get),
                 part2.cmd(),
                 Commands.parallel(
