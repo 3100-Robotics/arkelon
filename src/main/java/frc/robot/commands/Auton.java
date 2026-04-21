@@ -86,6 +86,7 @@ public class Auton {
         autoChooser.addCmd("Do nothing", Commands::none);
         autoChooser.addRoutine("xbump_right", () -> crossBump(Direction.Right));
         autoChooser.addRoutine("xbump_left", () -> crossBump(Direction.Left));
+        autoChooser.addRoutine("outpost", this::outpost);
 
         SmartDashboard.putData("Auton Selector", autoChooser);
         SmartDashboard.putBoolean("astop", false);
@@ -166,8 +167,9 @@ public class Auton {
                 intake.setPivotState(PivotState.FullDeploy),
                 part1.cmd(),
                 // Collect
+
                 Commands.waitSeconds(5),
-                drivetrain.goToPoseCommand(part2.getInitialPose()::get),
+                drivetrain.goToPoseCommand(part2.getInitialPose()::get).withTimeout(0.3),
                 part2.cmd(),
                 Commands.parallel(
                     drivetrain.pointAtPose(() -> Locator.getInstance().hubPose),
@@ -203,4 +205,5 @@ public class Auton {
 
         return routine;
     }
+
 }

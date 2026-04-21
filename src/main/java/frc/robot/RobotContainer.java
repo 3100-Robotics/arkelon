@@ -138,6 +138,7 @@ public class RobotContainer {
             .onTrue(shooter.setFlywheelState(FlywheelStates.Varying))
             .onFalse(shooter.setFlywheelState(FlywheelStates.Frozen))
         ;
+        
         // Reverse intake povLeft
         brendanCtl.povLeft()
             .onTrue(intake.setRollerState(RollerState.Reverse))

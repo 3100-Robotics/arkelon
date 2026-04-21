@@ -30,8 +30,8 @@ public class Constants {
     public static final Pose2d hubPoseBlue = new Pose2d(4.628518104553223, 4.035704612731934, new Rotation2d());
     public static final Pose2d hubPoseRed = ChoreoAllianceFlipUtil.getMirrorX().flip(hubPoseBlue);
 
-    public static final Pose2d towerPoseBlue = new Pose2d(0.7231502532958984, 4.741844654083252, new Rotation2d());
-    public static final Pose2d towerPoseRed = ChoreoAllianceFlipUtil.getMirrorX().flip(towerPoseBlue);
+    public static final Pose2d towerPoseBlue = new Pose2d(0.6886858344078064, 4.7454071044921875, new Rotation2d());
+    public static final Pose2d towerPoseRed = ChoreoAllianceFlipUtil.getRotateAround().flip(towerPoseBlue);
 
 
     public interface MotorConfigs {
