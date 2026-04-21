@@ -161,8 +161,8 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
     @Override
     public void periodic() {
-        headingController.enableContinuousInput(-Math.PI+0.000000000000001, Math.PI);
-        trajectoryheadingController.enableContinuousInput(-Math.PI+0.000000000000001, Math.PI);
+        headingController.enableContinuousInput(-Math.PI, Math.PI);
+        trajectoryheadingController.enableContinuousInput(-Math.PI, Math.PI);
         // SmartDashboard.putNumber("isAlignedWhenTurning", isAtPoseSetpointDebounceExcludeTranslation.getAsBoolean() ? 2000 : 0);
         SmartDashboard.putNumber("isAlignedWhenTurning", iapsDebounce2.getAsBoolean() ? 2000 : 0);
         
@@ -257,9 +257,9 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
         // Generate the next speeds for the robot
         ChassisSpeeds speeds = new ChassisSpeeds(
-                sample.vx + trajectoryxController.calculate(pose.getX(), sample.x),
-                sample.vy + trajectoryyController.calculate(pose.getY(), sample.y),
-                sample.omega + trajectoryheadingController.calculate(pose.getRotation().getRadians(), sample.heading)
+            sample.vx + trajectoryxController.calculate(pose.getX(), sample.x),
+            sample.vy + trajectoryyController.calculate(pose.getY(), sample.y),
+            sample.omega + trajectoryheadingController.calculate(pose.getRotation().getRadians(), sample.heading)
         );
 
 

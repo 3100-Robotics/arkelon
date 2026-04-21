@@ -103,7 +103,7 @@ public class Auton {
     }
 
     public AutoRoutine crossBump(Direction side) {
-        var routine = autoFactory.newRoutine("outpost");
+        var routine = autoFactory.newRoutine("xbump_"+side.toString());
 
         var part1 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part1"));
         var part2 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part2"));
@@ -148,6 +148,30 @@ public class Auton {
             Commands.sequence(
                 intake.setPivotState(PivotState.FullDeploy),
                 intake.setRollerState(RollerState.On)
+            )
+        );
+
+        return routine;
+    }
+
+    public AutoRoutine outpost() {
+        var routine = autoFactory.newRoutine("outpost");
+
+        var part1 = routine.trajectory("outpost_part1");
+        var part2 = routine.trajectory("outpost_part2");
+
+        routine.active().onTrue(
+            Commands.sequence(
+                part1.resetOdometry(),
+                intake.setPivotState(PivotState.FullDeploy),
+                part1.cmd(),
+                // Collect
+                drivetrain.goToPoseCommand(part2.getInitialPose()::get),
+                part2.cmd(),
+                Commands.parallel(
+                    drivetrain.pointAtPose(() -> Locator.getInstance().hubPose),
+                    rcontainer.shootDialed()
+                )
             )
         );
 
