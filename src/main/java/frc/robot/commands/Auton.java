@@ -84,7 +84,8 @@ public class Auton {
         );
 
         autoChooser.addCmd("Do nothing", Commands::none);
-        autoChooser.addRoutine("xbump", this::crossBump);
+        autoChooser.addRoutine("xbump_right", () -> crossBump(Direction.Right));
+        autoChooser.addRoutine("xbump_left", () -> crossBump(Direction.Left));
 
         SmartDashboard.putData("Auton Selector", autoChooser);
         SmartDashboard.putBoolean("astop", false);
@@ -101,12 +102,12 @@ public class Auton {
             );
     }
 
-    public AutoRoutine crossBump() {
+    public AutoRoutine crossBump(Direction side) {
         var routine = autoFactory.newRoutine("outpost");
 
-        var part1 = routine.trajectory("xbump_part1");
-        var part2 = routine.trajectory("xbump_part2");
-        var part3 = routine.trajectory("xbump_part3");
+        var part1 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part1"));
+        var part2 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part2"));
+        var part3 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part3"));
 
         routine.active().onTrue(
             Commands.sequence(
