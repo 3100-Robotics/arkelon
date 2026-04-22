@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.States.Indexer.TripleRollerStates;
 import frc.robot.States.Intake.RollerState;
@@ -106,8 +107,8 @@ public class RobotContainer {
             )
         );
 
-        // Brendan shoot is: x
-        brendanCtl.x().whileTrue(
+        // Brendan shoot is: X, Jesus is A
+        brendanCtl.x().or(jesusCtl.a()).whileTrue(
             shootDialed()
         ).onFalse(
             Commands.sequence(
@@ -116,13 +117,21 @@ public class RobotContainer {
                 indexer.setState(TripleRollerStates.Off)
             )
         );
+
+        // Jesus povLeft reverse indexer
+        jesusCtl.povLeft()
+            .onTrue(indexer.setState(TripleRollerStates.Reverse));
         
         // Brendan intake up/down NORMAL is: leftBumper
-        brendanCtl.leftBumper().onTrue(intake.togglePivot());
+        brendanCtl.leftBumper().or(jesusCtl.leftBumper())
+            .onTrue(intake.togglePivot());
         jesusCtl.leftTrigger().onTrue(intake.setFullStow()).onFalse(intake.leaveFullStow());
         
         // Brendan rin intake: left trigger
-        brendanCtl.leftTrigger().onTrue(intake.setRollerState(RollerState.On)).onFalse(intake.setRollerState(RollerState.Off));
+        brendanCtl.leftTrigger().or(jesusCtl.rightBumper())
+            .onTrue(intake.setRollerState(RollerState.On))
+            .onFalse(intake.setRollerState(RollerState.Off))
+        ;
         
         // Idle all: povUp
         brendanCtl.povUp().or(jesusCtl.povUp()).onTrue(
