@@ -117,6 +117,8 @@ public class Auton {
                 intake.setPivotState(PivotState.Medium),
                 part1.cmd(),
                 drivetrain.goToPoseCommand(() -> part2.getInitialPose().get())
+                    .withTimeout(0.5),
+                drivetrain.goToPoseCommand(() -> part2.getInitialPose().get())
                     .until(drivetrain.isAtPoseSetpoint),
                 Commands.sequence(
                     intake.setPivotState(PivotState.FullDeploy),
@@ -126,7 +128,7 @@ public class Auton {
                 Commands.parallel(
                     rcontainer.shootDialed(),
                     Commands.waitSeconds(1)
-                        .andThen(intake.setPivotState(PivotState.FullDeploy))
+                        .andThen(intake.setPivotState(PivotState.Medium))
                         .andThen(intake.setRollerState(RollerState.On)),
                     drivetrain.pointAtPose(() -> Locator.getInstance().hubPose)
                 ).withTimeout(5),
@@ -143,6 +145,13 @@ public class Auton {
         );
 
         part1.atTime("DeployIntake").onTrue(
+            Commands.sequence(
+                intake.setPivotState(PivotState.FullDeploy),
+                intake.setRollerState(RollerState.On)
+            )
+        );
+
+        part3.atTime("Collect").onTrue(
             Commands.sequence(
                 intake.setPivotState(PivotState.FullDeploy),
                 intake.setRollerState(RollerState.On)
