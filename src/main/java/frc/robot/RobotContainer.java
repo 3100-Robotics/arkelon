@@ -176,8 +176,6 @@ public class RobotContainer {
             .onTrue(shootDialed(HoodState.OpposeToAlly, FlywheelStates.OpposeToAlly))
             .onFalse(postShootIdles())
         ;
-
-        // jesusCtl.leftBumper().onTrue();
     }
 
     public Command getAutonomousCommand() {

@@ -220,4 +220,43 @@ public class Auton {
 
         return routine;
     }
+
+    // Segments
+    public Command outpostPart1(AutoRoutine routine) {
+        var part1 = routine.trajectory("outpost_part1");
+        var part2 = routine.trajectory("outpost_part2");
+
+        return Commands.sequence(
+            part1.resetOdometry(),
+            intake.setPivotState(PivotState.FullDeploy),
+            part1.cmd(),
+            Commands.runOnce(() -> drivetrain.setControl(new SwerveRequest.Idle())),
+            // Collect
+
+            Commands.waitSeconds(4),
+            drivetrain.goToPoseCommand(part2.getInitialPose()::get).withTimeout(0.2),
+            part2.cmd(),
+            Commands.parallel(
+                Commands.waitSeconds(1)
+                    .andThen(intake.setRollerState(RollerState.On))
+                    .andThen(intake.setPivotState(PivotState.Medium)
+                ),
+                drivetrain.pointAtPose(() -> Locator.getInstance().hubPose),
+                rcontainer.shootDialed()
+            )
+        );
+    }
+
+    public Command outpostPart2(AutoRoutine routine) {
+        var part3 = routine.trajectory("outpost_part3");
+        
+        return Commands.sequence(
+            rcontainer.postShootIdles()
+                .andThen(intake.setRollerState(RollerState.Off))
+                .withTimeout(0),
+            drivetrain.goToPoseCommand(part3.getInitialPose()::get)
+                .withTimeout(0.2),
+            part3.cmd()
+        );
+    }
 }
