@@ -73,12 +73,16 @@ public class Constants {
 
             static {
                 // Distance Angle
-                distanceAngleTable.add(Pair.of(Meters.of(1.36), 20.0-2.5));
-                distanceAngleTable.add(Pair.of(Meters.of(5.86), 40.0-2.5));
+                distanceAngleTable.add(Pair.of(Meters.of(1.36), 20.0-2.5)); // Close
+                distanceAngleTable.add(Pair.of(Inches.of(135), 27.8)); // Tower fwd
+                distanceAngleTable.add(Pair.of(Inches.of(164), 31.5)); // Tower bkwd
+                distanceAngleTable.add(Pair.of(Meters.of(5.86), 40.0-2.5)); // Far
 
                 // Distance Speed
-                distanceSpeedTable.add(Pair.of(Meters.of(1.36), 2400.0+(2400*0.05)));
-                distanceSpeedTable.add(Pair.of(Meters.of(5.86), 3960.0+(3960*0.05)));
+                distanceSpeedTable.add(Pair.of(Meters.of(1.36), 2400.0+(2400*0.05))); // Close
+                distanceSpeedTable.add(Pair.of(Inches.of(135), 3100.0)); // Tower fwd
+                distanceSpeedTable.add(Pair.of(Inches.of(164), 3300.0)); // Tower bkwd
+                distanceSpeedTable.add(Pair.of(Meters.of(5.86), 3960.0+(3960*0.05))); // Far
                 
             }
         }
@@ -130,10 +134,10 @@ public class Constants {
 
     public interface IntakeContants {
         // Roller contants
-        static PIDController rollerPidReal = new PIDController(10, 0, 0);
+        static PIDController rollerPidReal = new PIDController(0.03, 0, 0);
         static PIDController rollerPidSim = new PIDController(10, 0, 0);
 
-        static SimpleMotorFeedforward rollerFeedforwardReal = new SimpleMotorFeedforward(0, 0.217, 0);
+        static SimpleMotorFeedforward rollerFeedforwardReal = new SimpleMotorFeedforward(0, 0.3, 0);
         static SimpleMotorFeedforward rollerFeedforwardSim = new SimpleMotorFeedforward(0, 0.217, 0);
 
         // Pivot Constants

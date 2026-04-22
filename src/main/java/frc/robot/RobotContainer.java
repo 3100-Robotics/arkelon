@@ -42,7 +42,7 @@ public class RobotContainer {
 
     private Intake intake = new Intake(); 
     private Indexer indexer = new Indexer();
-    private Shooter shooter = new Shooter(() -> Shooter.calculateHoodAngle(getShooterDistance.get()), 
+    public Shooter shooter = new Shooter(() -> Shooter.calculateHoodAngle(getShooterDistance.get()), 
                                           () -> Shooter.calculateFlywheelSpeed(getShooterDistance.get())
                                         );
     private Drivetrain drivetrain = TunerConstantsArkelon0416.createDrivetrain();
@@ -53,6 +53,7 @@ public class RobotContainer {
     public Auton auto;
 
     public RobotContainer() {
+        instance = this;
         locator = new Locator(drivetrain::getPos, drivetrain);
         vision = new Vision(drivetrain::addVisionMeasurement, drivetrain::getPos);
 
@@ -71,11 +72,23 @@ public class RobotContainer {
     }
 
     public Command shootDialed() {
+        return shootDialed(HoodState.Varying, FlywheelStates.Varying);
+    }
+
+    public Command shootDialed(HoodState hoodState, FlywheelStates flywheelStates) {
         return Commands.sequence(
-            shooter.setFlywheelState(FlywheelStates.Varying),
-            shooter.setHoodState(HoodState.Varying),
+            shooter.setFlywheelState(flywheelStates),
+            shooter.setHoodState(hoodState),
             Commands.waitSeconds(0.1).andThen(Commands.waitUntil(shooter.flywheelsAtAccel)),
             indexer.setState(TripleRollerStates.On)
+        );
+    }
+
+    public Command postShootIdles() {
+        return Commands.parallel(
+            shooter.setFlywheelState(FlywheelStates.Frozen),
+            shooter.setHoodState(HoodState.Frozen),
+            indexer.setState(TripleRollerStates.Off)
         );
     }
 
@@ -112,7 +125,7 @@ public class RobotContainer {
         brendanCtl.leftTrigger().onTrue(intake.setRollerState(RollerState.On)).onFalse(intake.setRollerState(RollerState.Off));
         
         // Idle all: povUp
-        brendanCtl.povUp().onTrue(
+        brendanCtl.povUp().or(jesusCtl.povUp()).onTrue(
             Commands.parallel(
                 intake.setRollerState(RollerState.Off),
                 indexer.setState(TripleRollerStates.Off),
@@ -138,12 +151,24 @@ public class RobotContainer {
             .onTrue(shooter.setFlywheelState(FlywheelStates.Varying))
             .onFalse(shooter.setFlywheelState(FlywheelStates.Frozen))
         ;
-        
+
         // Reverse intake povLeft
         brendanCtl.povLeft()
             .onTrue(intake.setRollerState(RollerState.Reverse))
             .onFalse(intake.setRollerState(RollerState.Off))
         ;
+
+        jesusCtl.b()
+            .onTrue(shootDialed(HoodState.NeutralToAlly, FlywheelStates.NeutralToAlly))
+            .onFalse(postShootIdles())
+        ;
+
+        jesusCtl.x()
+            .onTrue(shootDialed(HoodState.OpposeToAlly, FlywheelStates.OpposeToAlly))
+            .onFalse(postShootIdles())
+        ;
+
+        // jesusCtl.leftBumper().onTrue();
     }
 
     public Command getAutonomousCommand() {

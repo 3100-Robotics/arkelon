@@ -1,6 +1,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RPM;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -72,6 +73,7 @@ public class Locator {
 
     // Smartdashboard values every 0.1 seconds
     public void periodicSmartDashboard() {
+        SmartDashboard.putNumber("shooterTargetSpeed2", RobotContainer.getInstance().shooter.flywheelSpeedSupplier.get().in(RPM));
         SmartDashboard.putData("best field ever", field);
         SmartDashboard.putBoolean("recvAllianceColor", hasAppliedAlliance);
         // SmartDashboard.putNumber("robotDistanceToHubFeet", distanceToHub.get().in(Feet));

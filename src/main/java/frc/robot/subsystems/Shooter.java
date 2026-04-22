@@ -106,8 +106,8 @@ public class Shooter extends SubsystemBase {
     private Optional<HoodState> hoodState = Optional.of(HoodState.Frozen);
     private Optional<FlywheelStates> flywheelStates = Optional.of(FlywheelStates.Frozen);
 
-    private Supplier<Angle> hoodAngleSupplier;
-    private Supplier<AngularVelocity> flywheelSpeedSupplier;
+    public Supplier<Angle> hoodAngleSupplier;
+    public Supplier<AngularVelocity> flywheelSpeedSupplier;
 
     public Shooter(Supplier<Angle> hoodAngleSupplier, Supplier<AngularVelocity> flywheelSpeedSupplier) {
         this.hoodAngleSupplier = hoodAngleSupplier;
