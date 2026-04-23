@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 public class States {
     public static class Shooter {
         public enum FlywheelStates {
-            Frozen, Varying, NeutralToAlly(3400), OpposeToAlly(5500);
+            Frozen, Varying, NeutralToAlly(3400), OpposeToAlly(5500), HubShot(2000);
 
             public Optional<AngularVelocity> speed;
 
@@ -33,6 +33,7 @@ public class States {
             Varying,
             NeutralToAlly(Constants.ShooterConstants.maxHoodAngle),
             OpposeToAlly(Constants.ShooterConstants.maxHoodAngle),
+            HubShot(Constants.ShooterConstants.minHoodAngle),
             Reset(Constants.ShooterConstants.minHoodAngle);
 
             public Optional<Angle> angle;
