@@ -110,7 +110,7 @@ public class RobotContainer {
         // Brendan shoot is: X, Jesus is A
         brendanCtl.x().or(jesusCtl.a()).whileTrue(
             shootDialed()
-        ).onFalse(
+        ).whileFalse(
             Commands.sequence(
                 shooter.setFlywheelState(FlywheelStates.Frozen),
                 shooter.setHoodState(HoodState.Frozen),
@@ -120,21 +120,21 @@ public class RobotContainer {
 
         // Jesus povLeft reverse indexer
         jesusCtl.povLeft()
-            .onTrue(indexer.setState(TripleRollerStates.Reverse));
+            .whileTrue(indexer.setState(TripleRollerStates.Reverse));
         
         // Brendan intake up/down NORMAL is: leftBumper
         brendanCtl.leftBumper().or(jesusCtl.leftBumper())
-            .onTrue(intake.togglePivot());
-        jesusCtl.leftTrigger().onTrue(intake.setFullStow()).onFalse(intake.leaveFullStow());
+            .whileTrue(intake.togglePivot());
+        jesusCtl.leftTrigger().whileTrue(intake.setFullStow()).whileFalse(intake.leaveFullStow());
         
         // Brendan rin intake: left trigger
         brendanCtl.leftTrigger().or(jesusCtl.rightBumper())
-            .onTrue(intake.setRollerState(RollerState.On))
-            .onFalse(intake.setRollerState(RollerState.Off))
+            .whileTrue(intake.setRollerState(RollerState.On))
+            .whileFalse(intake.setRollerState(RollerState.Off))
         ;
         
         // Idle all: povUp
-        brendanCtl.povUp().or(jesusCtl.povUp()).onTrue(
+        brendanCtl.povUp().or(jesusCtl.povUp()).whileTrue(
             Commands.parallel(
                 intake.setRollerState(RollerState.Off),
                 indexer.setState(TripleRollerStates.Off),
@@ -144,10 +144,11 @@ public class RobotContainer {
         );
         
         // Reset odometry: povDown
-        brendanCtl.povDown().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Locator.getInstance().towerPose)));
+        brendanCtl.povDown()
+            .whileTrue(Commands.runOnce(() -> drivetrain.resetPose(Locator.getInstance().towerPose)));
         
         // Toggle vision: povRight
-        brendanCtl.povRight().onTrue(Commands.runOnce(() -> {
+        brendanCtl.povRight().whileTrue(Commands.runOnce(() -> {
             if (vision.usePose == true) {
                 vision.usePose = false;
             } else {
@@ -157,29 +158,29 @@ public class RobotContainer {
 
         // Keep flywheel spun up while holding: rightBumper
         brendanCtl.rightBumper()
-            .onTrue(shooter.setFlywheelState(FlywheelStates.Varying))
-            .onFalse(shooter.setFlywheelState(FlywheelStates.Frozen))
+            .whileTrue(shooter.setFlywheelState(FlywheelStates.Varying))
+            .whileFalse(shooter.setFlywheelState(FlywheelStates.Frozen))
         ;
 
         // Reverse intake povLeft
         brendanCtl.povLeft()
-            .onTrue(intake.setRollerState(RollerState.Reverse))
-            .onFalse(intake.setRollerState(RollerState.Off))
+            .whileTrue(intake.setRollerState(RollerState.Reverse))
+            .whileFalse(intake.setRollerState(RollerState.Off))
         ;
 
         jesusCtl.b()
-            .onTrue(shootDialed(HoodState.NeutralToAlly, FlywheelStates.NeutralToAlly))
-            .onFalse(postShootIdles())
+            .whileTrue(shootDialed(HoodState.NeutralToAlly, FlywheelStates.NeutralToAlly))
+            .whileFalse(postShootIdles())
         ;
 
         jesusCtl.x()
-            .onTrue(shootDialed(HoodState.OpposeToAlly, FlywheelStates.OpposeToAlly))
-            .onFalse(postShootIdles())
+            .whileTrue(shootDialed(HoodState.OpposeToAlly, FlywheelStates.OpposeToAlly))
+            .whileFalse(postShootIdles())
         ;
 
         jesusCtl.y() 
-            .onTrue(shootDialed(HoodState.HubShot, FlywheelStates.HubShot))
-            .onFalse(postShootIdles())
+            .whileTrue(shootDialed(HoodState.HubShot, FlywheelStates.HubShot))
+            .whileFalse(postShootIdles())
         ;
     }
 
