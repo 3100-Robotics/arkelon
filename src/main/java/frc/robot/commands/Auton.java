@@ -86,6 +86,10 @@ public class Auton {
         autoChooser.addCmd("Do nothing", Commands::none);
         autoChooser.addRoutine("xbump_right", () -> crossBump(Direction.Right));
         autoChooser.addRoutine("xbump_left", () -> crossBump(Direction.Left));
+
+        autoChooser.addRoutine("xbump2_right", () -> crossBump2(Direction.Right));
+        autoChooser.addRoutine("xbump2_left", () -> crossBump2(Direction.Left));
+
         autoChooser.addRoutine("outpost", this::outpost);
         autoChooser.addRoutine("outpostNeutralZone", this::outpostNeutralZone);
 
@@ -152,6 +156,70 @@ public class Auton {
         );
 
         part3.atTime("Collect").onTrue(
+            Commands.sequence(
+                intake.setPivotState(PivotState.FullDeploy),
+                intake.setRollerState(RollerState.On)
+            )
+        );
+
+        return routine;
+    }
+
+    public AutoRoutine crossBump2(Direction side) {
+        var routine = autoFactory.newRoutine("xbump_"+side.toString());
+
+        var part1 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part1"));
+        var part2 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part2"));
+        var part3_v2 = FlipTrajectory.flipConditional(side, routine, routine.trajectory("xbump_part3_v2"));
+
+        routine.active().onTrue(
+            Commands.sequence(
+                part1.resetOdometry(),
+                intake.setPivotState(PivotState.Medium),
+                part1.cmd(),
+                drivetrain.goToPoseCommand(() -> part2.getInitialPose().get())
+                    .withTimeout(0.5),
+                drivetrain.goToPoseCommand(() -> part2.getInitialPose().get())
+                    .until(drivetrain.isAtPoseSetpoint),
+                Commands.sequence(
+                    intake.setPivotState(PivotState.FullDeploy),
+                    intake.setRollerState(RollerState.Off)
+                ),
+                part2.cmd(),
+                Commands.parallel(
+                    rcontainer.shootDialed(),
+                    Commands.waitSeconds(1)
+                        .andThen(intake.setPivotState(PivotState.Medium))
+                        .andThen(intake.setRollerState(RollerState.On)),
+                    drivetrain.pointAtPose(() -> Locator.getInstance().hubPose)
+                ).withTimeout(5),
+                Commands.sequence(
+                    intake.setPivotState(PivotState.Medium),
+                    intake.setRollerState(RollerState.Off),
+                    indexer.setState(TripleRollerStates.Off),
+                    shooter.setFlywheelState(FlywheelStates.Frozen),
+                    shooter.setHoodState(HoodState.Frozen)
+                ),
+                part3_v2.cmd(),
+                Commands.runOnce(() -> drivetrain.setControl(new SwerveRequest.Idle())),
+                Commands.parallel(
+                    rcontainer.shootDialed(),
+                    Commands.waitSeconds(1)
+                        .andThen(intake.setPivotState(PivotState.Medium))
+                        .andThen(intake.setRollerState(RollerState.On)),
+                    drivetrain.pointAtPose(() -> Locator.getInstance().hubPose)
+                ).withTimeout(10)
+            )
+        );
+
+        part1.atTime("DeployIntake").onTrue(
+            Commands.sequence(
+                intake.setPivotState(PivotState.FullDeploy),
+                intake.setRollerState(RollerState.On)
+            )
+        );
+
+        part3_v2.atTime("Collect").onTrue(
             Commands.sequence(
                 intake.setPivotState(PivotState.FullDeploy),
                 intake.setRollerState(RollerState.On)
