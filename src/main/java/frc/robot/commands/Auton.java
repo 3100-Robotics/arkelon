@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Locator;
+import frc.robot.MatchConfig;
 import frc.robot.RobotContainer;
 import frc.robot.Vision;
 import frc.robot.States.Indexer.TripleRollerStates;
@@ -96,7 +97,11 @@ public class Auton {
         SmartDashboard.putData("Auton Selector", autoChooser);
         SmartDashboard.putBoolean("astop", false);
         RobotModeTriggers.autonomous()
-            .whileTrue(autoChooser.selectedCommandScheduler()
+            .whileTrue(
+                Commands.sequence(
+                    Commands.waitSeconds(MatchConfig.autonDelay),
+                    autoChooser.selectedCommandScheduler()
+                )
                 .unless(astop)
         );
 
