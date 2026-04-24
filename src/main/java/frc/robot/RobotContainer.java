@@ -18,6 +18,7 @@ import frc.robot.States.Indexer.TripleRollerStates;
 import frc.robot.States.Intake.RollerState;
 import frc.robot.States.Shooter.FlywheelStates;
 import frc.robot.States.Shooter.HoodState;
+import frc.robot.Utils.ShootType;
 import frc.robot.commands.Auton;
 import frc.robot.commands.DriveTeleoperated;
 import frc.robot.generated.TunerConstantsArkelon0416;
@@ -51,6 +52,8 @@ public class RobotContainer {
     public Locator locator;
     private Vision vision;
 
+    public ShootType shootType = ShootType.Hub;
+
     public Auton auto;
 
     public RobotContainer() {
@@ -67,6 +70,10 @@ public class RobotContainer {
     }
 
     public void calculateShooterDistance() {
+        Distance distanceToTarget;
+        if (shootType==ShootType.Hub) {
+            distanceToTarget = Locator.getInstance().getDistanceToHub();
+        }
         shooterDistance = Locator.getInstance().getDistanceToHub() // Robot center distance from hub
             .plus(Inches.of(5.4330709)) // Center to fuel exit
         ;
