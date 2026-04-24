@@ -108,7 +108,7 @@ public class RobotContainer {
         );
 
         // Brendan shoot is: X, Jesus is A
-        brendanCtl.x().or(jesusCtl.a()).whileTrue(
+        brendanCtl.x().or(jesusCtl.a()).or(brendanCtl.rightStick()).whileTrue(
             shootDialed()
         ).whileFalse(
             Commands.sequence(
@@ -125,7 +125,7 @@ public class RobotContainer {
         // Brendan intake up/down NORMAL is: leftBumper
         brendanCtl.leftBumper().or(jesusCtl.leftBumper())
             .whileTrue(intake.togglePivot());
-        jesusCtl.leftTrigger().whileTrue(intake.setFullStow()).whileFalse(intake.leaveFullStow());
+        jesusCtl.leftTrigger().or(brendanCtl.y()).whileTrue(intake.setFullStow()).whileFalse(intake.leaveFullStow());
         
         // Brendan rin intake: left trigger
         brendanCtl.leftTrigger().or(jesusCtl.rightBumper())
@@ -166,11 +166,6 @@ public class RobotContainer {
         brendanCtl.povLeft()
             .whileTrue(intake.setRollerState(RollerState.Reverse))
             .whileFalse(intake.setRollerState(RollerState.Off))
-        ;
-
-        jesusCtl.b()
-            .whileTrue(shootDialed(HoodState.NeutralToAlly, FlywheelStates.NeutralToAlly))
-            .whileFalse(postShootIdles())
         ;
 
         jesusCtl.x()
