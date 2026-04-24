@@ -27,6 +27,7 @@ public class Locator {
 
     public Pose2d hubPose = Constants.hubPoseBlue;
     public Pose2d towerPose = Constants.towerPoseBlue;
+    // public Pose2d passPose = Constants.
 
     private final Field2d field = new Field2d();
 
@@ -64,6 +65,14 @@ public class Locator {
         double distance = Math.sqrt(
             Math.pow(getRobotPose().getMeasureX().minus(hubPose.getMeasureX()).in(Inches), 2) + 
             Math.pow(getRobotPose().getMeasureY().minus(hubPose.getMeasureY()).in(Inches), 2)
+        );
+        return Inches.of(distance);
+    }
+
+    public Distance getDistanceToPass() {
+        double distance = Math.sqrt(
+            Math.pow(getRobotPose().getMeasureX().minus(towerPose.getMeasureX()).in(Inches), 2) + 
+            Math.pow(getRobotPose().getMeasureY().minus(towerPose.getMeasureY()).in(Inches), 2)
         );
         return Inches.of(distance);
     }

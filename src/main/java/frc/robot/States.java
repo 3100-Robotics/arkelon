@@ -13,6 +13,7 @@ public class States {
         public enum FlywheelStates {
             Frozen, 
             Varying,
+            Pass,
             NeutralToAlly(3400),
             OpposeToAlly(5500),
             HubShot(2700);
@@ -35,6 +36,7 @@ public class States {
         public enum HoodState {
             Frozen,
             Varying,
+            Pass,
             NeutralToAlly(Constants.ShooterConstants.maxHoodAngle),
             OpposeToAlly(Constants.ShooterConstants.maxHoodAngle),
             HubShot(16.5f),

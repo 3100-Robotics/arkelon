@@ -73,8 +73,12 @@ public class RobotContainer {
         Distance distanceToTarget;
         if (shootType==ShootType.Hub) {
             distanceToTarget = Locator.getInstance().getDistanceToHub();
+        } else if (shootType==ShootType.Pass) {
+            distanceToTarget = Locator.getInstance().getDistanceToPass();
+        } else {
+            distanceToTarget = Locator.getInstance().getDistanceToHub();
         }
-        shooterDistance = Locator.getInstance().getDistanceToHub() // Robot center distance from hub
+        shooterDistance = distanceToTarget // Robot center distance from hub
             .plus(Inches.of(5.4330709)) // Center to fuel exit
         ;
     }
@@ -98,6 +102,14 @@ public class RobotContainer {
             shooter.setHoodState(HoodState.Frozen),
             indexer.setState(TripleRollerStates.Off)
         );
+    }
+
+    public Command setPassMode() {
+        return Commands.runOnce(() -> shootType = ShootType.Pass);
+    }
+
+    public Command setHubMode() {
+        return Commands.runOnce(() -> shootType = ShootType.Hub);
     }
 
     private void configureBindings() {
@@ -173,6 +185,11 @@ public class RobotContainer {
         brendanCtl.povLeft()
             .whileTrue(intake.setRollerState(RollerState.Reverse))
             .whileFalse(intake.setRollerState(RollerState.Off))
+        ;
+
+        jesusCtl.b()
+            .whileTrue(setPassMode().andThen(shootDialed()))
+            .whileFalse(setHubMode().andThen(postShootIdles()))    
         ;
 
         jesusCtl.x()

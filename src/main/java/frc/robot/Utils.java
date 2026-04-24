@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Timer;
 
 public interface Utils {
-
     public enum ShootType {
         Hub, Pass
     }
