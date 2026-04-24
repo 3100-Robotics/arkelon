@@ -17,6 +17,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUsageId;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,9 +31,12 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Utils.FieldType;
 
 public class Vision extends SubsystemBase {
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
@@ -56,7 +60,7 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean usePose = true;
-    private AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+    private final AprilTagFieldLayout tagLayout;
 
     public static final Transform3d robotToFrontRight =
         new Transform3d(
@@ -98,6 +102,24 @@ public class Vision extends SubsystemBase {
 
     public Vision(EstimateConsumer estConsumer, Supplier<Pose2d> robotPoseFromDrivetrain) {
         this.robotPoseFromDrivetrain = robotPoseFromDrivetrain;
+        AprilTagFieldLayout tempTagLayout;
+        var tempTagLayoutPath = Filesystem.getDeployDirectory().getPath()
+            .concat(MatchConfig.fieldType.get().toString())
+            .concat(MatchConfig.visionColor.get().toString())
+            .concat(".json");
+
+        try {
+            tempTagLayout = new AprilTagFieldLayout(tempTagLayoutPath);
+        } catch (Exception e) {
+            tempTagLayout = AprilTagFieldLayout.loadField(
+                MatchConfig.fieldType.isPresent() ?
+                    MatchConfig.fieldType.get().field 
+                    : AprilTagFields.k2026RebuiltWelded
+            );
+        }
+
+        tagLayout = tempTagLayout;
+
         photonEstimatorFrontRight = new PhotonPoseEstimator(
             tagLayout,
             robotToFrontRight

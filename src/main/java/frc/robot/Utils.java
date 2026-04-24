@@ -1,8 +1,19 @@
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.Timer;
 
 public interface Utils {
+
+    public enum FieldType {
+        Welded(AprilTagFields.k2026RebuiltWelded), Andymark(AprilTagFields.k2026RebuiltAndymark);
+
+        public AprilTagFields field;
+
+        private FieldType(AprilTagFields field) {
+            this.field = field;
+        }
+    }
 
     public enum Direction {
         Left, Right;
