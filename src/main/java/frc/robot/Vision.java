@@ -32,6 +32,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
@@ -85,6 +87,16 @@ public class Vision extends SubsystemBase {
     public PhotonPoseEstimator photonEstimatorFrontLeft;
     public PhotonCamera cameraFrontRight = new PhotonCamera("Right");
     public PhotonCamera cameraFrontLeft = new PhotonCamera("Left");
+
+    public Boolean usingRightCam = true;
+
+    public Command switchCam = Commands.runOnce(() -> {
+        if (usingRightCam) {
+            usingRightCam = false;
+        } else {
+            usingRightCam = true;
+        }
+    });
 
     // Simulation
 
@@ -146,6 +158,7 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putData(switchCam);
         SmartDashboard.putBoolean("usingPose", usePose);
         SmartDashboard.putData("purevision", purevision);
         rightcam3d.set(new Pose3d(robotToFrontRight.getTranslation(), robotToFrontRight.getRotation()));
@@ -155,6 +168,7 @@ public class Vision extends SubsystemBase {
         //     rightHasTarget.get()
         // ) {
 
+        if (usingRightCam) {
             Optional<EstimatedRobotPose> visionEstRight = Optional.empty();
             for (var result : cameraFrontRight.getAllUnreadResults()) {
                 visionEstRight = photonEstimatorFrontRight.estimateCoprocMultiTagPose(result);
@@ -185,7 +199,38 @@ public class Vision extends SubsystemBase {
                     );
                 }
             }
-        
+        } else {
+            Optional<EstimatedRobotPose> visionEstLeft = Optional.empty();
+            for (var result : cameraFrontLeft.getAllUnreadResults()) {
+                visionEstLeft = photonEstimatorFrontLeft.estimateCoprocMultiTagPose(result);
+                if (visionEstLeft.isEmpty()) {
+                    visionEstLeft = photonEstimatorFrontLeft.estimateLowestAmbiguityPose(result);
+                }
+                updateEstimationStdDevs(visionEstLeft, result.getTargets());
+
+                if (Robot.isSimulation()) {
+                    visionEstLeft.ifPresentOrElse(
+                        est ->
+                                getSimDebugField()
+                                        .getObject("VisionEstimation")
+                                        .setPose(est.estimatedPose.toPose2d()),
+                        () -> {
+                            getSimDebugField().getObject("VisionEstimation").setPoses();
+                        }
+                    );
+                } else {
+                    visionEstLeft.ifPresent(
+                        est -> {
+                            var estStdDevs = getEstimationStdDevs();
+                            // purevision.setRobotPose(est.estimatedPose.toPose2d());
+                            if (usePose) {
+                                estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                            }
+                        }
+                    );
+                }
+            }
+        }
         // }
 
 
