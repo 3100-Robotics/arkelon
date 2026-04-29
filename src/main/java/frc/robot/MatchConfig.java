@@ -1,5 +1,5 @@
 package frc.robot;
 
 public interface MatchConfig {
-    float autonDelay = 5;
+    float autonDelay = 0;
 }

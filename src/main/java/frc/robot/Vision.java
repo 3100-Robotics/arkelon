@@ -96,6 +96,7 @@ public class Vision extends SubsystemBase {
         } else {
             usingRightCam = true;
         }
+        System.out.println("Ran the thing");
     });
 
     // Simulation
@@ -159,6 +160,7 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putData(switchCam);
+        SmartDashboard.putBoolean("usingRightCam", usingRightCam);
         SmartDashboard.putBoolean("usingPose", usePose);
         SmartDashboard.putData("purevision", purevision);
         rightcam3d.set(new Pose3d(robotToFrontRight.getTranslation(), robotToFrontRight.getRotation()));
