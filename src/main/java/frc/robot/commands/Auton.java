@@ -94,6 +94,8 @@ public class Auton {
         autoChooser.addRoutine("outpost", this::outpost);
         autoChooser.addRoutine("outpostNeutralZone", this::outpostNeutralZone);
 
+        autoChooser.addRoutine("shoot_preload", this::shootPreload);
+
         SmartDashboard.putData("Auton Selector", autoChooser);
         SmartDashboard.putBoolean("astop", false);
         RobotModeTriggers.autonomous()
@@ -251,6 +253,29 @@ public class Auton {
                 Commands.waitSeconds(4),
                 drivetrain.goToPoseCommand(part2.getInitialPose()::get).withTimeout(0.2),
                 part2.cmd(),
+                Commands.parallel(
+                    Commands.waitSeconds(1)
+                        .andThen(intake.setRollerState(RollerState.On))
+                        .andThen(intake.setPivotState(PivotState.Medium)
+                    ),
+                    drivetrain.pointAtPose(() -> Locator.getInstance().hubPose),
+                    rcontainer.shootDialed()
+                )
+            )
+        );
+
+        return routine;
+    }
+
+    public AutoRoutine shootPreload() {
+        var routine = autoFactory.newRoutine("shootPreload");
+
+        routine.active().onTrue(
+            Commands.sequence(
+                new DrivePositionFieldRobotRelative(drivetrain, () -> {
+                    var ipose = drivetrain.getPos();
+                    return new Pose2d(ipose.getX()-1, ipose.getY(), ipose.getRotation());
+                }).withTimeout(1),
                 Commands.parallel(
                     Commands.waitSeconds(1)
                         .andThen(intake.setRollerState(RollerState.On))
