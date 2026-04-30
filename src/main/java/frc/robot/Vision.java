@@ -37,8 +37,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    // public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.2, 0.2, 0.2);
+    // public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = kSingleTagStdDevs;
 
     public BooleanSubscriber leftHasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/Left/hasTarget").subscribe(false);
     public BooleanSubscriber rightHasTarget = NetworkTableInstance.getDefault().getBooleanTopic("/photonvision/Right/hasTarget").subscribe(false);
@@ -58,7 +60,7 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean usePose = true;
-    private AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+    private AprilTagFieldLayout tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
     public static final Transform3d robotToFrontRight =
         new Transform3d(
